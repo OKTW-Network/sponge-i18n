@@ -1,11 +1,16 @@
 package one.oktw.i18n.api
 
+import one.oktw.i18n.api.provider.TranslationStringProvider
 import org.spongepowered.api.entity.living.player.Player
 import java.util.*
+import java.util.Arrays.asList
 import java.util.concurrent.ConcurrentHashMap
 
 const val DEFAULT_LANGUAGE = "en"
 
+/**
+ * Registry of player language setting and translation providers
+ */
 class Registry private constructor() {
     companion object {
         val instance = Registry()
@@ -29,15 +34,18 @@ class Registry private constructor() {
 
         val locale = Locale.forLanguageTag(language)
 
-        val partial = locale.language + '-' + locale.variant
+        val partial = locale.language + '-' + locale.country
         val minimal = locale.language
 
-        providers.forEach {
-            val result = it.get(language, key) ?: it.get(partial, key) ?: it.get(minimal, key)
+        asList(language, partial, minimal, DEFAULT_LANGUAGE).forEach {current->
+            providers.forEach {
+                val result =
+                        it.get(current, key)
 
-            if (result != null) {
-                cache[Pair(language, key)] = result
-                return result
+                if (result != null) {
+                    cache[Pair(current, key)] = result
+                    return result
+                }
             }
         }
 

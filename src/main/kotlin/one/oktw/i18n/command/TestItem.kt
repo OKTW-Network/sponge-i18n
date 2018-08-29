@@ -1,7 +1,6 @@
 package one.oktw.i18n.command
 
-import one.oktw.i18n.api.Translation
-import one.oktw.i18n.translation.Helper
+import one.oktw.i18n.Main
 import org.spongepowered.api.command.CommandResult
 import org.spongepowered.api.command.CommandSource
 import org.spongepowered.api.command.args.CommandContext
@@ -12,9 +11,10 @@ import org.spongepowered.api.entity.living.player.Player
 import org.spongepowered.api.item.ItemTypes
 import org.spongepowered.api.item.inventory.ItemStack
 import org.spongepowered.api.text.Text
+import org.spongepowered.api.text.format.TextColors
 import java.util.Arrays.asList
 
-class TestItem: CommandExecutor {
+class TestItem : CommandExecutor {
     companion object {
         val spec: CommandSpec = CommandSpec.builder()
                 .permission("i18n.command.test")
@@ -23,23 +23,37 @@ class TestItem: CommandExecutor {
                 .build()
     }
 
+    val lang = Main.main.languageService
+
     override fun execute(src: CommandSource, args: CommandContext): CommandResult {
         if (src !is Player) return CommandResult.empty()
 
         val item = ItemStack.of(ItemTypes.IRON_SWORD, 1).apply {
             offer(
-                    Keys.DISPLAY_NAME, Text.of(Helper.placeholder(
-                    "tooltip.item_owned",
-                    src.name,
-                    Translation("item.sword")))
+                    Keys.DISPLAY_NAME,
+                    lang.of(
+                            "tooltip.item_owned",
+                            src.name,
+                            lang.sub("item.sword")
+                    )
             )
 
             offer(Keys.ITEM_LORE, asList<Text>(
-                    Text.of(Helper.placeholder("tooltip.description"))
+                    lang.of("tooltip.description"),
+                    lang.ofLiteral("\\ ", lang.sub("tooltip.description"), " /")
             ))
         }
 
         src.inventory.offer(item)
+
+        src.sendMessage(lang.toLocalizedLiteralText(
+                src,
+                TextColors.AQUA,
+                "gave ",
+                src.name,
+                " a ",
+                lang.sub("item.sword")
+        ))
 
         return CommandResult.success()
     }

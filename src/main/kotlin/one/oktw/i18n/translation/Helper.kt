@@ -1,10 +1,12 @@
 package one.oktw.i18n.translation
 
-import one.oktw.i18n.api.Registry
-import one.oktw.i18n.api.Translation
+import com.google.gson.JsonArray
 import com.google.gson.JsonElement
 import com.sun.javaws.exceptions.InvalidArgumentException
 import one.oktw.i18n.Main.Companion.IDENTIFIER
+import one.oktw.i18n.api.Registry
+import one.oktw.i18n.api.translation.KeyTranslation
+import one.oktw.i18n.api.translation.LiteralTranslation
 import java.text.MessageFormat
 
 class Helper {
@@ -26,29 +28,38 @@ class Helper {
 
             val obj = element.asJsonObject
 
-            if (!obj.has("key")) {
-                throw InvalidArgumentException(arrayOf("do not have key"))
-            }
+            when {
+                obj.has("key") -> {
+                    val key = obj.getAsJsonPrimitive("key").asString ?: return null
 
-            val key = obj.getAsJsonPrimitive("key").asString ?: return null
+                    val values = if (obj.has("values")) {
+                        obj.getAsJsonArray("values")
+                    } else {
+                        JsonArray()
+                    }
 
-            val values = obj.getAsJsonArray("values")
+                    val replacements = Array<String>(values.size()) {
+                        val item = values[it]
 
-            val replacements = Array<String>(values.size()) {
-                val item = values[it]
+                        if (item.isJsonObject) {
+                            translate(language, item.asJsonObject) ?: ""
+                        } else if (item.isJsonPrimitive && item.asJsonPrimitive.isString) {
+                            item.asString
+                        } else {
+                            throw InvalidArgumentException(arrayOf("value is not a Object nor String"))
+                        }
+                    }
 
-                if (item.isJsonObject) {
-                    translate(language, item.asJsonObject) ?: ""
-                } else if (item.isJsonPrimitive && item.asJsonPrimitive.isString){
-                    item.asString
-                } else {
-                    throw InvalidArgumentException(arrayOf("value is not a Object nor String"))
+                    val format = if (key == "\$literal") {
+                        MessageFormat(replacements.mapIndexed { index, _ -> "{$index}" }.joinToString(""))
+                    } else {
+                        getFormat(language, key)
+                    }
+
+                    return format.format(replacements)
                 }
+                else -> throw InvalidArgumentException(arrayOf("do not have a key"))
             }
-
-            val format = getFormat(language, key)
-
-            return format.format(replacements)
         }
 
         /*
@@ -57,7 +68,16 @@ class Helper {
          */
         @Suppress("unused")
         fun placeholder(key: String, vararg values: Any): String {
-            return IDENTIFIER + Translation(key, *values).toJsonObject().toString()
+            return IDENTIFIER + KeyTranslation(key, *values).toJsonObject().toString()
+        }
+
+        /*
+         * Usage:
+         * literalPlaceHolder("{0} get a {1}", "mmis1000", Translation("item.sword"))
+         */
+        @Suppress("unused")
+        fun literalPlaceHolder(vararg values: Any): String {
+            return IDENTIFIER + LiteralTranslation(*values).toJsonObject().toString()
         }
     }
 }

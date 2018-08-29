@@ -1,6 +1,6 @@
 package one.oktw.i18n.test
 
-import one.oktw.i18n.api.TranslationStringProvider
+import one.oktw.i18n.api.provider.TranslationStringProvider
 import java.util.*
 
 class TestTranslationProvider private constructor(): TranslationStringProvider {

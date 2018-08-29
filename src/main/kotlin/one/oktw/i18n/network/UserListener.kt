@@ -14,6 +14,7 @@ import net.minecraft.nbt.NBTTagString
 import net.minecraft.network.play.client.CPacketCreativeInventoryAction
 import net.minecraft.network.play.server.SPacketSetSlot
 import net.minecraft.network.play.server.SPacketWindowItems
+import one.oktw.i18n.Main
 import org.spongepowered.api.entity.living.player.Player
 import one.oktw.i18n.translation.Helper
 
@@ -42,6 +43,8 @@ class UserListener(private val player: Player, private val registry: Registry) :
     private fun handle(packet: CPacketCreativeInventoryAction, packetEvent: PacketEvent, connection: PacketConnection) {
         val item = packet.stack
 
+        Main.main.logger.info("creative action ${item.tagCompound}")
+
         val translationNBT = item.getSubCompound("i18n") ?: return
         item.removeSubCompound("i18n")
 
@@ -64,6 +67,8 @@ class UserListener(private val player: Player, private val registry: Registry) :
                     }
                 }
             } catch (err: Throwable) {
+                Main.main.logger.error(err.localizedMessage)
+                Main.main.logger.error(err.stackTrace.joinToString(""))
             }
         }
     }
@@ -114,8 +119,8 @@ class UserListener(private val player: Player, private val registry: Registry) :
 
         if (translated.size > 0) {
             val translatedList = NBTTagList()
-            val i18n = item.getOrCreateSubCompound("i18n")
-            i18n.setTag("list", i18n)
+            val i18n = newItem.getOrCreateSubCompound("i18n")
+            i18n.setTag("list", translatedList)
 
             translated.forEach { (index, json) ->
                 val obj = JsonObject()
