@@ -17,6 +17,7 @@ import one.oktw.i18n.test.TestTranslationProvider
 import org.slf4j.Logger
 import org.spongepowered.api.Sponge
 import org.spongepowered.api.event.Listener
+import org.spongepowered.api.event.Order
 import org.spongepowered.api.event.entity.living.humanoid.player.PlayerChangeClientSettingsEvent
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent
 import org.spongepowered.api.event.network.ClientConnectionEvent
@@ -50,7 +51,7 @@ class Main {
         main = this
     }
 
-    @Listener
+    @Listener(order = Order.EARLY)
     fun onPreInit(event: GamePreInitializationEvent) {
         Sponge.getServiceManager().setProvider(plugin, I18n::class.java, I18nImpl)
         languageService = Sponge.getServiceManager().provide(I18n::class.java).get().register("i18n", TestTranslationProvider.instance)
