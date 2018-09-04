@@ -1,12 +1,14 @@
 package one.oktw.i18n.translation
 
-import com.google.gson.JsonArray
-import com.google.gson.JsonElement
+import com.google.gson.*
 import com.sun.javaws.exceptions.InvalidArgumentException
 import one.oktw.i18n.Main.Companion.IDENTIFIER
 import one.oktw.i18n.api.Registry
 import one.oktw.i18n.api.translation.KeyTranslation
 import one.oktw.i18n.api.translation.LiteralTranslation
+import org.spongepowered.api.item.inventory.ItemStack
+import org.spongepowered.api.text.translation.Translatable
+import org.spongepowered.api.text.translation.Translation
 import java.text.MessageFormat
 
 class Helper {
@@ -78,6 +80,41 @@ class Helper {
         @Suppress("unused")
         fun literalPlaceHolder(vararg values: Any): String {
             return IDENTIFIER + LiteralTranslation(*values).toJsonObject().toString()
+        }
+
+        fun convertTranslation(itemStack: ItemStack): JsonElement {
+            @Suppress("CAST_NEVER_SUCCEEDS")
+            val nativeStack = itemStack as net.minecraft.item.ItemStack
+
+            val display = nativeStack.getSubCompound("display")
+
+            if (display == null || !display.hasKey("Name")) {
+                return convertTranslation(itemStack as Translatable)
+            }
+
+            val name = display.getString("Name")
+
+            if (!name.startsWith(IDENTIFIER)) {
+                return JsonPrimitive(name)
+            }
+
+            val parser = JsonParser()
+
+            return try {
+                parser.parse(name.drop(IDENTIFIER.length))
+            } catch (err: Throwable) {
+                JsonPrimitive(name)
+            }
+        }
+
+        fun convertTranslation(translatable: Translatable): JsonElement {
+                return convertTranslation(translatable.translation)
+        }
+
+        fun convertTranslation(translation: Translation): JsonElement {
+            val obj = JsonObject()
+            obj.addProperty("key", "minecraft:${translation.id}")
+            return obj
         }
     }
 }

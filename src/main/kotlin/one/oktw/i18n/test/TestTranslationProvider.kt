@@ -13,13 +13,13 @@ class TestTranslationProvider private constructor(): TranslationStringProvider {
 
         return when (languageName) {
             "en"-> when (key) {
-                "tooltip.item_owned"-> "{0}''s {1}"
+                "tooltip.item_owned"-> "%s's %s"
                 "item.sword"-> "Sword"
                 "tooltip.description"->"Description"
                 else -> null
             }
             "zh"-> when (key) {
-                "tooltip.item_owned"-> "{0} 的 {1}"
+                "tooltip.item_owned"-> "%s 的 %s"
                 "item.sword"-> "劍"
                 "tooltip.description"->"描述"
                 else -> null

@@ -1,5 +1,6 @@
 package one.oktw.i18n.api
 
+import one.oktw.i18n.Main
 import one.oktw.i18n.api.provider.TranslationStringProvider
 import org.spongepowered.api.entity.living.player.Player
 import java.util.*
@@ -26,6 +27,8 @@ class Registry private constructor() {
     }
 
     fun get(language: String, key: String): String {
+        Main.main.logger.info("registry#get ${language} ${key}")
+
         val cached = cache[Pair(language, key)]
 
         if (cached != null) {
