@@ -15,5 +15,5 @@ interface I18n {
     // get locale aware plain text serializer
     fun getPlainTextSerializer(locale: Locale): TextSerializer
 
-    fun register(scope: String, provider: TranslationStringProvider): TranslationService
+    fun register(scope: String, provider: TranslationStringProvider, allowSameScopeExist: Boolean = false): TranslationService
 }

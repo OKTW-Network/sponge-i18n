@@ -2,6 +2,7 @@ package one.oktw.i18n.mixin;
 
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
+import net.minecraft.util.text.translation.I18n;
 import one.oktw.i18n.text.interfaces.IExtendedMixinTextComponent;
 import net.minecraft.util.text.*;
 import one.oktw.i18n.api.I18nImpl;
@@ -56,8 +57,23 @@ public abstract class ExtendedMixinTextComponentTranslation extends ExtendedMixi
         return newChildren;
     }
 
+    @SuppressWarnings("deprecation")
     private List<IExtendedMixinTextComponent> createChildren(Locale locale) {
-        String format = I18nImpl.INSTANCE.getRegistry().get(locale, key);
+        String format;
+
+        if (key.contains(":")) {
+            format = I18nImpl.INSTANCE.getRegistry().get(locale, key);
+        } else {
+            format = I18nImpl.INSTANCE.getRegistry().get(locale, "minecraft:" + key);
+        }
+
+        if (format.equals(key)) {
+            try {
+                format = I18n.translateToLocal(this.key);
+            } catch (Exception err) {
+                format = I18n.translateToFallback(this.key);
+            }
+        }
 
         List<ITextComponent> children = Lists.<ITextComponent>newArrayList();
 

@@ -25,8 +25,8 @@ object I18nImpl : I18n {
 
     override val registry = Registry.instance
 
-    override fun register(scope: String, provider: TranslationStringProvider): TranslationServiceImpl {
-        if (registered.contains(scope)) {
+    override fun register(scope: String, provider: TranslationStringProvider, allowSameScopeExist: Boolean): TranslationServiceImpl {
+        if (registered.contains(scope) && !allowSameScopeExist) {
             throw Error("already registered provider for $scope")
         }
 
