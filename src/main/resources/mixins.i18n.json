@@ -1,0 +1,17 @@
+{
+  "required": true,
+  "minVersion": "0.7.10",
+  "package": "one.oktw.i18n.mixin",
+  "refmap": "mixins.i18n.refmap.json",
+  "target": "@env(DEFAULT)",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+    "MixinSpongeTranslation",
+    "ExtendedMixinTextComponentBase",
+    "ExtendedMixinTextComponentKeybind",
+    "ExtendedMixinTextComponentScore",
+    "ExtendedMixinTextComponentSelector",
+    "ExtendedMixinTextComponentString",
+    "ExtendedMixinTextComponentTranslation"
+  ]
+}

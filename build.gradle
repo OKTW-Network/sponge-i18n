@@ -13,6 +13,7 @@ buildscript {
     }
 
     dependencies {
+        classpath 'org.spongepowered:mixingradle:0.6-SNAPSHOT'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
     }
@@ -28,6 +29,7 @@ plugins {
 }
 
 apply plugin: 'net.minecraftforge.gradle.forge'
+apply plugin: 'org.spongepowered.mixin'
 apply plugin: 'kotlin'
 
 group 'one.oktw'
@@ -47,6 +49,8 @@ repositories {
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     compile 'org.spongepowered:spongeapi:7.1.0-SNAPSHOT'
+    compile 'org.spongepowered:mixin:0.7.11-SNAPSHOT'
+    compileOnly 'org.spongepowered:spongecommon:7.1.0-SNAPSHOT:dev'
     compileOnly 'com.github.CrushedPixel:PacketGate:33902a1'
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }
@@ -58,10 +62,17 @@ compileTestKotlin {
     kotlinOptions.jvmTarget = "1.8"
 }
 
+reobf {
+    shadowJar {
+        classpath = sourceSets.main.compileClasspath
+    }
+}
+
+extractAnnotationsJar.enabled = false
 
 minecraft {
     version = "1.12.2-14.23.4.2736"
-    mappings = "snapshot_20180813"
+    mappings = "snapshot_20180808"
     makeObfSourceJar = false
 }
 
@@ -85,10 +96,19 @@ signing {
     sign configurations.archives
 }
 
+sourceSets {
+    main {
+        ext.refMap = "mixins.i18n.refmap.json"
+    }
+}
 
 jar {
     manifest.attributes(
-            "FMLAT": "i18n_at.cfg"
+            "FMLAT": "i18n_at.cfg",
+            'TweakClass': 'org.spongepowered.asm.launch.MixinTweaker',
+            'MixinConfigs': 'mixins.i18n.json',
+            'FMLCorePluginContainsFMLMod': 'true',
+            'ForceLoadAsMod' : true
     )
 }
 

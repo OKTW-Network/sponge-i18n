@@ -8,16 +8,22 @@ import com.sun.javaws.exceptions.InvalidArgumentException
 import one.oktw.i18n.api.Registry
 import one.oktw.i18n.translation.Helper
 import org.spongepowered.api.entity.living.player.Player
+import org.spongepowered.api.item.inventory.ItemStack
 import org.spongepowered.api.text.Text
 import org.spongepowered.api.text.format.TextColor
 import org.spongepowered.api.text.format.TextStyle
 import org.spongepowered.api.text.serializer.TextSerializers
+import org.spongepowered.api.text.translation.Translatable
 import java.util.*
 
 /**
  * Represent A nested translatable Text
  */
 class KeyTranslation(private val key: String, private vararg val values: Any) : Translation {
+    override fun fromJsonObject(element: JsonElement): Translation {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
     override fun toJsonObject(): JsonElement {
         val obj = JsonObject()
         obj.add("key", JsonPrimitive(key))
@@ -28,6 +34,9 @@ class KeyTranslation(private val key: String, private vararg val values: Any) : 
 
             values.forEach { arg ->
                 valueArray.add(when (arg) {
+                    is ItemStack -> Helper.convertTranslation(arg)
+                    is Translatable -> Helper.convertTranslation(arg)
+                    is org.spongepowered.api.text.translation.Translation -> Helper.convertTranslation(arg)
                     is Text -> JsonPrimitive(TextSerializers.LEGACY_FORMATTING_CODE.serialize(arg).replace("h", ""))
                     is TextStyle -> JsonPrimitive(TextSerializers.LEGACY_FORMATTING_CODE.serialize(Text.of(arg, "h")).replace("h", ""))
                     is TextColor -> JsonPrimitive(TextSerializers.LEGACY_FORMATTING_CODE.serialize(Text.of(arg, "h")).replace("h", ""))
@@ -52,10 +61,4 @@ class KeyTranslation(private val key: String, private vararg val values: Any) : 
     override fun toLocalized(locale: Locale): String {
         return Helper.translate(locale.toLanguageTag(), toJsonObject())!!
     }
-
-    override fun toText(player: Player): Text = Text.of(toLocalized(player))
-
-    override fun toText(language: String): Text = Text.of(toLocalized(language))
-
-    override fun toText(locale: Locale): Text = Text.of(toLocalized(locale))
 }
