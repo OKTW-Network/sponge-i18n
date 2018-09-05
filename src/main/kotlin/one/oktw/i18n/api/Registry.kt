@@ -29,8 +29,6 @@ class Registry private constructor() {
     fun get(locale: Locale, key: String): String {
         val language = locale.toLanguageTag()
 
-        Main.main.logger.info("registry#get $language $key")
-
         val cached = cache[Pair(language, key)]
 
         if (cached != null) {
