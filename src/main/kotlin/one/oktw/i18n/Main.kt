@@ -24,7 +24,6 @@ import org.spongepowered.api.event.network.ClientConnectionEvent
 import org.spongepowered.api.plugin.Dependency
 import org.spongepowered.api.plugin.Plugin
 import org.spongepowered.api.plugin.PluginContainer
-import org.spongepowered.api.text.translation.Translation
 import javax.inject.Inject
 
 @Plugin(
@@ -76,8 +75,7 @@ class Main {
     @Listener
     fun onPlayerLanguage(event: PlayerChangeClientSettingsEvent) {
         val player = event.targetEntity
-        val language = event.locale.toLanguageTag()
-        Registry.instance.setLanguage(player, language)
+        Registry.instance.setLanguage(player, event.locale)
 
         (Sponge.getServer() as MinecraftServer).playerList.syncPlayerInventory(player as EntityPlayerMP)
     }

@@ -2,20 +2,30 @@ package one.oktw.i18n.api
 
 import one.oktw.i18n.api.provider.TranslationStringProvider
 import one.oktw.i18n.api.provider.TranslationStringProvider.Companion.ScopedTranslationStringProvider
-import one.oktw.i18n.api.service.TranslationService
-import one.oktw.i18n.api.translation.KeyTranslation
-import one.oktw.i18n.api.translation.LiteralTranslation
-import one.oktw.i18n.translation.Helper
+import one.oktw.i18n.api.serializer.LocalizedFomattingCodeSerializer
+import one.oktw.i18n.api.serializer.LocalizedPlainTextSerializer
+import one.oktw.i18n.api.service.TranslationServiceImpl
+import org.spongepowered.api.text.serializer.TextSerializer
+import java.util.*
 
 object I18nImpl : I18n {
     private val registered = ArrayList<String>()
 
+    override fun getLegacySerializer(locale: Locale): TextSerializer {
+        return LocalizedFomattingCodeSerializer(locale, '§')
+    }
+
+    override fun getSpongeSerializer(locale: Locale): TextSerializer {
+        return LocalizedFomattingCodeSerializer(locale, '&')
+    }
+
+    override fun getPlainTextSerializer(locale: Locale): TextSerializer {
+        return LocalizedPlainTextSerializer(locale)
+    }
+
     override val registry = Registry.instance
-    override fun rawPlaceHolder(key: String, vararg values: Any) = Helper.placeholder(key, *values)
-    override fun literalPlaceHolder(vararg values: Any) = Helper.literalPlaceHolder(*values)
-    override fun rawTranslation(key: String, vararg values: Any) = KeyTranslation(key, *values)
-    override fun literalTranslation(vararg values: Any) = LiteralTranslation(*values)
-    override fun register(scope: String, provider: TranslationStringProvider): TranslationService {
+
+    override fun register(scope: String, provider: TranslationStringProvider): TranslationServiceImpl {
         if (registered.contains(scope)) {
             throw Error("already registered provider for $scope")
         }
@@ -28,6 +38,6 @@ object I18nImpl : I18n {
 
         registry.register(ScopedTranslationStringProvider(scope, provider))
 
-        return TranslationService(scope)
+        return TranslationServiceImpl(scope)
     }
 }

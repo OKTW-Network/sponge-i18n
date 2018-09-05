@@ -8,8 +8,8 @@ class TestTranslationProvider private constructor(): TranslationStringProvider {
         val instance = TestTranslationProvider()
     }
 
-    override fun get(language: String, key: String): String? {
-        val languageName = Locale.forLanguageTag(language).language
+    override fun get(locale: Locale, key: String): String? {
+        val languageName = locale.language
 
         return when (languageName) {
             "en"-> when (key) {

@@ -105,7 +105,7 @@ public abstract class ExtendedMixinTextComponentBase implements IExtendedMixinTe
         }
     }
 
-    static Iterator<IExtendedMixinTextComponent> createDeepCopyIterator(Locale locale, Iterable<IExtendedMixinTextComponent> components) {
+    private static Iterator<IExtendedMixinTextComponent> createDeepCopyIterator(Locale locale, Iterable<IExtendedMixinTextComponent> components) {
         Iterator<IExtendedMixinTextComponent> iterator = Iterators.concat(Iterators.transform(components.iterator(), new ExtendedMixinTextComponentBase$FUNCTION1(locale)));
         iterator = Iterators.transform(iterator, new ExtendedMixinTextComponentBase$FUNCTION2(locale));
         return iterator;
