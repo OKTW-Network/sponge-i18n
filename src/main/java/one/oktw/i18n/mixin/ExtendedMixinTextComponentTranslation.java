@@ -16,6 +16,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -32,7 +33,7 @@ public abstract class ExtendedMixinTextComponentTranslation extends ExtendedMixi
     // vanilla
     private static final Pattern STRING_VARIABLE_PATTERN = Pattern.compile("%(?:(\\d+)\\$)?([A-Za-z%]|$)");
 
-    private HashMap<Locale, List<IExtendedMixinTextComponent>> childrenExtended = new HashMap<>();
+    private ConcurrentHashMap<Locale, List<IExtendedMixinTextComponent>> childrenExtended = new ConcurrentHashMap<>();
 
     public String getUnformattedComponentText(Locale locale) {
         StringBuilder stringbuilder = new StringBuilder();

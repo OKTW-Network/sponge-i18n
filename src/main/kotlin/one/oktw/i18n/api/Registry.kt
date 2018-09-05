@@ -37,6 +37,7 @@ class Registry private constructor() {
             return cached
         }
 
+        // find translation by locale
         providers.forEach {
             val result =
                     it.get(locale, key)
@@ -47,6 +48,18 @@ class Registry private constructor() {
             }
         }
 
+        // fallback ti default language, gave up if we still can't get anything matched
+        providers.forEach {
+            val result =
+                    it.get(DEFAULT_LANGUAGE, key)
+
+            if (result != null) {
+                cache[Pair(language, key)] = result
+                return result
+            }
+        }
+
+        // gave up, just return the original key back
         return key
     }
 
