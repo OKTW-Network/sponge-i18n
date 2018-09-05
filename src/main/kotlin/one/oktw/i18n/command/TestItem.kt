@@ -45,12 +45,12 @@ class TestItem : CommandExecutor {
                             lang.of(
                                     "tooltip.item_owned",
                                     Text.of(
-                                        TextColors.DARK_PURPLE,
-                                        src.name
+                                            TextColors.DARK_PURPLE,
+                                            src.name
                                     ),
                                     Text.of(
-                                        TextColors.YELLOW,
-                                        lang.of("item.sword")
+                                            TextColors.YELLOW,
+                                            lang.of("item.sword")
                                     )
                             )
                     )
@@ -95,6 +95,15 @@ class TestItem : CommandExecutor {
         printPlain(src, text1, Locale.TAIWAN)
         printLegacy(src, text1, Locale.ENGLISH)
         printLegacy(src, text1, Locale.TAIWAN)
+
+        src.sendMessage(Text.of(
+                lang.toLegacy(src, Text.of("give you a ", lang.fromItem(item)))
+        ))
+
+        src.sendMessage(Text.of(
+                lang.toLegacy(src, Text.of("give you a ", TextColors.YELLOW, lang.removeStyle(lang.fromItem(item))))
+        ))
+
         src.inventory.offer(item)
 
         return CommandResult.success()

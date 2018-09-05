@@ -2,6 +2,7 @@ package one.oktw.i18n.api.service
 
 import one.oktw.i18n.Main.Companion.IDENTIFIER
 import one.oktw.i18n.api.I18nImpl
+import one.oktw.i18n.text.Helper
 import one.oktw.i18n.translation.I18nTranslation
 import org.spongepowered.api.data.key.Keys
 import org.spongepowered.api.entity.living.player.Player
@@ -104,5 +105,9 @@ class TranslationServiceImpl(private val scope: String) : TranslationService {
 
     override fun toSponge(locale: Locale, text: Text): String {
         return I18nImpl.getSpongeSerializer(locale).serialize(text)
+    }
+
+    override fun removeStyle(text: Text): Text {
+        return Helper.removeStyle(text)
     }
 }

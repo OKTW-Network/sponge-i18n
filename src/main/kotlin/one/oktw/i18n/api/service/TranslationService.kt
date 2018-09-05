@@ -31,4 +31,7 @@ interface TranslationService {
     fun toLegacy(locale: Locale, text: Text): String
     fun toSponge(player: Player, text: Text): String
     fun toSponge(locale: Locale, text: Text): String
+
+    // helper
+    fun removeStyle(text: Text): Text
 }
