@@ -18,7 +18,7 @@ public class MixinSpongeTranslation {
 
     @Inject(method = "get(Ljava/util/Locale;)Ljava/lang/String;", at = @At("HEAD"))
     private void onGet(Locale locale, CallbackInfoReturnable<String> cir) {
-        String temp = I18nImpl.INSTANCE.getRegistry().get(locale.toLanguageTag(), id);
+        String temp = I18nImpl.INSTANCE.getRegistry().get(locale, id);
 
         if (!temp.equals(id)) {
             cir.setReturnValue(temp);
@@ -27,7 +27,7 @@ public class MixinSpongeTranslation {
 
     @Inject(method = "get(Ljava/util/Locale;[Ljava/lang/Object;)Ljava/lang/String;", at = @At("HEAD"))
     private void onGet(Locale locale, Object[] args, CallbackInfoReturnable<String> cir){
-        String temp = I18nImpl.INSTANCE.getRegistry().get(locale.toLanguageTag(), id);
+        String temp = I18nImpl.INSTANCE.getRegistry().get(locale, id);
 
         if (!temp.equals((id))) {
             cir.setReturnValue(String.format(locale, temp, args));

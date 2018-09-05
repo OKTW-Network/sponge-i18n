@@ -1,10 +1,10 @@
 package one.oktw.i18n.network
 
-import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import one.oktw.i18n.Main.Companion.IDENTIFIER
 import one.oktw.i18n.api.Registry
 import com.google.gson.JsonParser
+import com.google.gson.JsonPrimitive
 import eu.crushedpixel.sponge.packetgate.api.event.PacketEvent
 import eu.crushedpixel.sponge.packetgate.api.listener.PacketListenerAdapter
 import eu.crushedpixel.sponge.packetgate.api.registry.PacketConnection
@@ -15,8 +15,9 @@ import net.minecraft.network.play.client.CPacketCreativeInventoryAction
 import net.minecraft.network.play.server.SPacketSetSlot
 import net.minecraft.network.play.server.SPacketWindowItems
 import one.oktw.i18n.Main
+import one.oktw.i18n.api.I18nImpl
 import org.spongepowered.api.entity.living.player.Player
-import one.oktw.i18n.translation.Helper
+import org.spongepowered.api.text.serializer.TextSerializers
 
 @Suppress("unused")
 class UserListener(private val player: Player, private val registry: Registry) : PacketListenerAdapter() {
@@ -56,14 +57,14 @@ class UserListener(private val player: Player, private val registry: Registry) :
             try {
                 val obj = parser.parse(nbtTagList.getStringTagAt(i)).asJsonObject
                 val index = obj.getAsJsonPrimitive("index").asInt
-                val tree = obj.getAsJsonObject("translation")
+                val json = obj.getAsJsonPrimitive("translation")
 
                 when (index) {
                     -1 -> {
-                        displayCompound.setString("Name", IDENTIFIER + tree.toString())
+                        displayCompound.setString("Name", IDENTIFIER + json)
                     }
                     else -> {
-                        displayCompound.getTagList("Lore", 8).set(index, NBTTagString(IDENTIFIER + tree.toString()))
+                        displayCompound.getTagList("Lore", 8).set(index, NBTTagString(IDENTIFIER + json))
                     }
                 }
             } catch (err: Throwable) {
@@ -76,7 +77,7 @@ class UserListener(private val player: Player, private val registry: Registry) :
     private fun rewriteItem(item: ItemStack): ItemStack {
         val language = Registry.instance.getLanguage(player)
 
-        val translated = ArrayList<Pair<Int, JsonElement>>()
+        val translated = ArrayList<Pair<Int, String>>()
 
         val newItem = item.copy()
 
@@ -85,12 +86,12 @@ class UserListener(private val player: Player, private val registry: Registry) :
                 val originalName = nbt.getString("Name")
                 if (originalName.startsWith(IDENTIFIER)) {
                     try {
-                        val parser = JsonParser()
-                        val tree = parser.parse(originalName.drop(IDENTIFIER.length))
-                        val result = Helper.translate(language, tree) ?: return@let
+                        val json = originalName.drop(IDENTIFIER.length)
+                        val text = TextSerializers.JSON.deserialize(json)
+                        val result = I18nImpl.getLegacySerializer(language).serialize(text)
 
                         nbt.setString("Name", result)
-                        translated.add(Pair(-1, tree))
+                        translated.add(Pair(-1, json))
                     } catch (err: Throwable) {
                     }
                 }
@@ -104,12 +105,12 @@ class UserListener(private val player: Player, private val registry: Registry) :
 
                     if (originalName.startsWith(IDENTIFIER)) {
                         try {
-                            val parser = JsonParser()
-                            val tree = parser.parse(originalName.drop(IDENTIFIER.length))
-                            val result = Helper.translate(language, tree) ?: return@let
+                            val json = originalName.drop(IDENTIFIER.length)
+                            val text = TextSerializers.JSON.deserialize(json)
+                            val result = I18nImpl.getLegacySerializer(language).serialize(text)
                             list.set(i, NBTTagString(result))
 
-                            translated.add(Pair(i, tree))
+                            translated.add(Pair(i, json))
                         } catch (err: Throwable) {
                         }
                     }
@@ -125,7 +126,7 @@ class UserListener(private val player: Player, private val registry: Registry) :
             translated.forEach { (index, json) ->
                 val obj = JsonObject()
                 obj.addProperty("index", index)
-                obj.add("translation", json)
+                obj.add("translation", JsonPrimitive(json))
 
                 translatedList.appendTag(NBTTagString(obj.toString()))
             }

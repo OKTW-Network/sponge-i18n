@@ -39,93 +39,63 @@ class TestItem : CommandExecutor {
         val item = ItemStack.of(ItemTypes.IRON_SWORD, 1).apply {
             offer(
                     Keys.DISPLAY_NAME,
-                    lang.ofLiteral(
+                    lang.ofPlaceHolder(
                             TextColors.AQUA,
                             TextStyles.BOLD,
-                            lang.sub(
+                            lang.of(
                                     "tooltip.item_owned",
-                                    src.name,
-                                    lang.sub("item.sword")
+                                    Text.of(
+                                        TextColors.DARK_PURPLE,
+                                        src.name
+                                    ),
+                                    Text.of(
+                                        TextColors.YELLOW,
+                                        lang.of("item.sword")
+                                    )
                             )
                     )
             )
 
             offer(Keys.ITEM_LORE, asList<Text>(
-                    lang.of("tooltip.description"),
-                    lang.ofLiteral("\\ ", lang.sub("tooltip.description"), " /")
+                    lang.ofPlaceHolder("tooltip.description"),
+                    lang.ofLiteralPlaceHolder("\\ ", lang.of("tooltip.description"), " /")
             ))
         }
 
-        src.sendMessage(lang.toLocalizedLiteralText(
-                src,
-                "gave ",
-                src.name,
-                " a ",
-                item,
-                " ",
-                item.translation
-        ))
+        val swordTranslate = lang.translation("item.sword")
+        val hasTranslate = lang.translation("tooltip.item_owned")
 
-        val swordTranslate = object : Translation {
-            override fun getId() = "i18n:item.sword"
-
-            override fun get(locale: Locale) = I18nImpl.registry.get(locale.toLanguageTag(), id)
-
-            override fun get(locale: Locale, vararg args: Any?) = I18nImpl.registry.get(locale.toLanguageTag(), id).format(*args)
-        }
-
-        val hasTranslate = object : Translation {
-            override fun getId() = "i18n:tooltip.item_owned"
-
-            override fun get(locale: Locale) = I18nImpl.registry.get(locale.toLanguageTag(), id)
-
-            override fun get(locale: Locale, vararg args: Any?) = I18nImpl.registry.get(locale.toLanguageTag(), id).format(*args)
-        }
-
-
-        val str = swordTranslate.get(Locale.US)
-        val plain = Text.of(swordTranslate).toPlain()
-        val serialized = TextSerializers.JSON.serialize(Text.of(swordTranslate))
-        val deserialized = TextSerializers.JSON.deserialize(serialized)
-        val text1 = TranslatableText.builder(hasTranslate, arrayOf(Text.of("mmis"), swordTranslate) as Array<Any>).toText()
-
-                //hasTranslate, ImmutableList.of("mmis", swordTranslate)).toText()
-
-        src.inventory.offer(item)
-
-        src.sendMessage(Text.of(
-                str
-        ))
-
-        src.sendMessage(Text.of(
-                plain
-        ))
-
-        src.sendMessage(Text.of(
-                serialized
-        ))
-
-        src.sendMessage(Text.of(
-                ((deserialized as IMixinText).toComponent() as IExtendedMixinTextComponent).getUnformattedComponentText(Locale.ENGLISH)
-        ))
-
-        src.sendMessage(Text.of(
-                ((deserialized as IMixinText).toComponent() as IExtendedMixinTextComponent).getUnformattedComponentText(Locale.TAIWAN)
-        ))
-
-        src.sendMessage(Text.of(
-                ((text1 as IMixinText).toComponent() as IExtendedMixinTextComponent).getUnformattedComponentText(Locale.ENGLISH)
-        ))
-
-        src.sendMessage(Text.of(
-                ((text1 as IMixinText).toComponent() as IExtendedMixinTextComponent).getUnformattedComponentText(Locale.TAIWAN)
-        ))
-
-        src.sendMessage(
-                Text.of(
-                        TextSerializers.FORMATTING_CODE.serialize(deserialized)
-                )
+        val text1 = Text.of(
+                hasTranslate,
+                Text.of(TextColors.RED, TextStyles.BOLD, "mmis"),
+                Text.of(TextColors.BLUE, TextStyles.ITALIC, swordTranslate)
         )
+
+        fun printComp(player: Player, text: Text, locale: Locale) {
+            player.sendMessage(Text.of(
+                    ((text as IMixinText).toComponent() as IExtendedMixinTextComponent).getUnformattedComponentText(locale)
+            ))
+        }
+
+        fun printLegacy(player: Player, text: Text, locale: Locale) {
+            player.sendMessage(Text.of(
+                    I18nImpl.getLegacySerializer(locale).serialize(text)
+            ))
+        }
+
+        fun printPlain(player: Player, text: Text, locale: Locale) {
+            player.sendMessage(Text.of(
+                    I18nImpl.getPlainTextSerializer(locale).serialize(text)
+            ))
+        }
+
+        printComp(src, text1, Locale.ENGLISH)
+        printComp(src, text1, Locale.TAIWAN)
+        printPlain(src, text1, Locale.ENGLISH)
+        printPlain(src, text1, Locale.TAIWAN)
+        printLegacy(src, text1, Locale.ENGLISH)
+        printLegacy(src, text1, Locale.TAIWAN)
+        src.inventory.offer(item)
 
         return CommandResult.success()
     }

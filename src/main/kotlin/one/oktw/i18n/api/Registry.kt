@@ -7,7 +7,7 @@ import java.util.*
 import java.util.Arrays.asList
 import java.util.concurrent.ConcurrentHashMap
 
-const val DEFAULT_LANGUAGE = "en"
+val DEFAULT_LANGUAGE = Locale.ENGLISH
 
 /**
  * Registry of player language setting and translation providers
@@ -17,7 +17,7 @@ class Registry private constructor() {
         val instance = Registry()
     }
 
-    private val playerLanguage = ConcurrentHashMap<UUID, String>()
+    private val playerLanguage = ConcurrentHashMap<UUID, Locale>()
     private val cache = ConcurrentHashMap<Pair<String, String>, String>()
     private val providers: ArrayList<TranslationStringProvider> = ArrayList()
 
@@ -26,8 +26,10 @@ class Registry private constructor() {
         providers.add(provider)
     }
 
-    fun get(language: String, key: String): String {
-        Main.main.logger.info("registry#get ${language} ${key}")
+    fun get(locale: Locale, key: String): String {
+        val language = locale.toLanguageTag()
+
+        Main.main.logger.info("registry#get $language $key")
 
         val cached = cache[Pair(language, key)]
 
@@ -35,20 +37,13 @@ class Registry private constructor() {
             return cached
         }
 
-        val locale = Locale.forLanguageTag(language)
+        providers.forEach {
+            val result =
+                    it.get(locale, key)
 
-        val partial = locale.language + '-' + locale.country
-        val minimal = locale.language
-
-        asList(language, partial, minimal, DEFAULT_LANGUAGE).forEach {current->
-            providers.forEach {
-                val result =
-                        it.get(current, key)
-
-                if (result != null) {
-                    cache[Pair(current, key)] = result
-                    return result
-                }
+            if (result != null) {
+                cache[Pair(language, key)] = result
+                return result
             }
         }
 
@@ -56,11 +51,11 @@ class Registry private constructor() {
     }
 
     @Suppress("unused")
-    fun setLanguage(player: Player, language: String) {
-        playerLanguage[player.uniqueId] = language
+    fun setLanguage(player: Player, locale: Locale) {
+        playerLanguage[player.uniqueId] = locale
     }
 
-    fun getLanguage(player: Player): String {
+    fun getLanguage(player: Player): Locale {
         return playerLanguage[player.uniqueId] ?: DEFAULT_LANGUAGE
     }
 }

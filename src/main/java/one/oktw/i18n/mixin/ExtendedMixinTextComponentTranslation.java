@@ -5,6 +5,8 @@ import com.google.common.collect.Lists;
 import one.oktw.i18n.text.interfaces.IExtendedMixinTextComponent;
 import net.minecraft.util.text.*;
 import one.oktw.i18n.api.I18nImpl;
+import one.oktw.i18n.text.util.vanilla.ExtendedMixinTextComponentBase$FUNCTION1;
+import one.oktw.i18n.text.util.vanilla.ExtendedMixinTextComponentBase$FUNCTION2;
 import one.oktw.i18n.text.util.vanilla.ExtendedTextComponentIterable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -55,7 +57,7 @@ public abstract class ExtendedMixinTextComponentTranslation extends ExtendedMixi
     }
 
     private List<IExtendedMixinTextComponent> createChildren(Locale locale) {
-        String format = I18nImpl.INSTANCE.getRegistry().get(key, locale.toLanguageTag());
+        String format = I18nImpl.INSTANCE.getRegistry().get(locale, key);
 
         List<ITextComponent> children = Lists.<ITextComponent>newArrayList();
 
@@ -137,5 +139,11 @@ public abstract class ExtendedMixinTextComponentTranslation extends ExtendedMixi
 
     public Iterator<IExtendedMixinTextComponent> childrenIterator(Locale locale) {
         return Iterators.concat(this.getChildrenByLocale(locale).iterator(), super.childrenIterator(locale));
+    }
+
+    private static Iterator<IExtendedMixinTextComponent> createDeepCopyIterator(Locale locale, Iterable<IExtendedMixinTextComponent> components) {
+        Iterator<IExtendedMixinTextComponent> iterator = Iterators.concat(Iterators.transform(components.iterator(), new ExtendedMixinTextComponentBase$FUNCTION1(locale)));
+        iterator = Iterators.transform(iterator, new ExtendedMixinTextComponentBase$FUNCTION2(locale));
+        return iterator;
     }
 }

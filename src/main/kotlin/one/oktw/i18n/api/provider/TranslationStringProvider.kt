@@ -1,11 +1,13 @@
 package one.oktw.i18n.api.provider
 
+import java.util.*
+
 interface TranslationStringProvider {
     companion object {
         class ScopedTranslationStringProvider(private val scope: String, private val provider: TranslationStringProvider): TranslationStringProvider {
-            override fun get(language: String, key: String): String? {
+            override fun get(locale: Locale, key: String): String? {
                 return if (key.startsWith("$scope:")) {
-                    provider.get(language, key.drop(scope.length + 1))
+                    provider.get(locale, key.drop(scope.length + 1))
                 } else {
                     null
                 }
@@ -14,5 +16,5 @@ interface TranslationStringProvider {
     }
 
     // get the translation key from key
-    fun get(language: String, key: String): String?
+    fun get(locale: Locale, key: String): String?
 }
