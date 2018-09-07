@@ -79,7 +79,6 @@ minecraft {
 shadowJar {
     classifier = null
     exclude "dummyThing"
-    exclude "META-INF/*.kotlin_module"
     exclude "META-INF/fml_*"
 
     dependencies {
@@ -87,8 +86,8 @@ shadowJar {
         include dependency("org.jetbrains.kotlinx:")
     }
 
-    relocate "kotlin", "me.mmis10000.relocate.kotlin"
-    relocate "kotlinx", "me.mmis10000.relocate.kotlinx"
+    relocate "kotlin", "one.oktw.i18n.relocate.kotlin"
+    relocate "kotlinx", "one.oktw.i18n.relocate.kotlinx"
 }
 
 signing {
