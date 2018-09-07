@@ -50,8 +50,8 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     compile 'org.spongepowered:spongeapi:7.1.0-SNAPSHOT'
     compile 'org.spongepowered:mixin:0.7.11-SNAPSHOT'
-    compileOnly 'org.spongepowered:spongecommon:7.1.0-SNAPSHOT:dev'
-    compileOnly 'com.github.CrushedPixel:PacketGate:33902a1'
+    compile 'org.spongepowered:spongecommon:7.1.0-SNAPSHOT:dev'
+    compile 'com.github.CrushedPixel:PacketGate:33902a1'
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }
 
