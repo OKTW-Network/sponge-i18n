@@ -44,8 +44,6 @@ class UserListener(private val player: Player, private val registry: Registry) :
     private fun handle(packet: CPacketCreativeInventoryAction, packetEvent: PacketEvent, connection: PacketConnection) {
         val item = packet.stack
 
-        Main.main.logger.info("creative action ${item.tagCompound}")
-
         val translationNBT = item.getSubCompound("i18n") ?: return
         item.removeSubCompound("i18n")
 
@@ -57,7 +55,7 @@ class UserListener(private val player: Player, private val registry: Registry) :
             try {
                 val obj = parser.parse(nbtTagList.getStringTagAt(i)).asJsonObject
                 val index = obj.getAsJsonPrimitive("index").asInt
-                val json = obj.getAsJsonPrimitive("translation")
+                val json = obj.getAsJsonPrimitive("translation").asString
 
                 when (index) {
                     -1 -> {
@@ -93,6 +91,8 @@ class UserListener(private val player: Player, private val registry: Registry) :
                         nbt.setString("Name", result)
                         translated.add(Pair(-1, json))
                     } catch (err: Throwable) {
+                        Main.main.logger.error(err.localizedMessage)
+                        Main.main.logger.error(err.stackTrace.joinToString(""))
                     }
                 }
             }
@@ -112,6 +112,8 @@ class UserListener(private val player: Player, private val registry: Registry) :
 
                             translated.add(Pair(i, json))
                         } catch (err: Throwable) {
+                            Main.main.logger.error(err.localizedMessage)
+                            Main.main.logger.error(err.stackTrace.joinToString(""))
                         }
                     }
                 }
