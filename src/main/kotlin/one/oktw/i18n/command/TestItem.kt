@@ -11,7 +11,8 @@ import org.spongepowered.api.command.spec.CommandSpec
 import org.spongepowered.api.data.key.Keys
 import org.spongepowered.api.entity.living.player.Player
 import org.spongepowered.api.item.ItemTypes
-import org.spongepowered.api.item.inventory.ItemStack
+import org.spongepowered.api.item.inventory.*
+import org.spongepowered.api.item.inventory.property.InventoryTitle
 import org.spongepowered.api.text.Text
 import org.spongepowered.api.text.format.TextColors
 import org.spongepowered.api.text.format.TextStyles
@@ -102,6 +103,14 @@ class TestItem : CommandExecutor {
         ))
 
         src.inventory.offer(item)
+
+        val inf = Inventory.builder()
+                .of(InventoryArchetypes.CHEST)
+                .of(InventoryArchetypes.DOUBLE_CHEST)
+                .property(InventoryTitle.of(lang.ofPlaceHolder("tooltip.description")))
+                .build(Main.main.plugin)
+
+        src.openInventory(inf)
 
         return CommandResult.success()
     }

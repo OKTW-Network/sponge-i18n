@@ -12,22 +12,48 @@ import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagList
 import net.minecraft.nbt.NBTTagString
 import net.minecraft.network.play.client.CPacketCreativeInventoryAction
+import net.minecraft.network.play.server.SPacketOpenWindow
 import net.minecraft.network.play.server.SPacketSetSlot
 import net.minecraft.network.play.server.SPacketWindowItems
+import net.minecraft.util.text.TextComponentString
 import one.oktw.i18n.Main
 import one.oktw.i18n.impl.I18nImpl
+import one.oktw.i18n.text.interfaces.IExtendedMixinTextComponent
 import org.spongepowered.api.entity.living.player.Player
 import org.spongepowered.api.text.serializer.TextSerializers
+import scala.reflect.internal.Trees
+import java.awt.TextComponent
 
 @Suppress("unused")
 class UserListener(private val player: Player, private val registry: Registry) : PacketListenerAdapter() {
     override fun onPacketWrite(packetEvent: PacketEvent, connection: PacketConnection) {
         packetEvent.packet.let { it as? SPacketSetSlot }?.let { handle(it, packetEvent, connection) }
         packetEvent.packet.let { it as? SPacketWindowItems }?.let { handle(it, packetEvent, connection) }
+        packetEvent.packet.let { it as? SPacketOpenWindow }?.let { handle(it, packetEvent, connection) }
     }
 
     override fun onPacketRead(packetEvent: PacketEvent, connection: PacketConnection) {
         packetEvent.packet.let { it as? CPacketCreativeInventoryAction }?.let { handle(it, packetEvent, connection) }
+    }
+
+    @Suppress("UNUSED_PARAMETER")
+    private fun handle(packet: SPacketOpenWindow, packetEvent: PacketEvent, connection: PacketConnection) {
+        val language = registry.getLanguage(player)
+
+        val title = packet.windowTitle.formattedText
+
+        if (title.startsWith(IDENTIFIER)) {
+            try {
+                val translated = I18nImpl.getLegacySerializer(language).serialize(
+                        TextSerializers.JSON.deserialize(title.drop(IDENTIFIER.length))
+                )
+
+                packet.windowTitle = TextComponentString(translated)
+            } catch (err: Throwable) {
+                Main.main.logger.error(err.localizedMessage)
+                Main.main.logger.error(err.stackTrace.joinToString(""))
+            }
+        }
     }
 
     @Suppress("UNUSED_PARAMETER")
@@ -48,7 +74,7 @@ class UserListener(private val player: Player, private val registry: Registry) :
         item.removeSubCompound("i18n")
 
         val nbtTagList = translationNBT.getTagList("list", 8)
-        val displayCompound = item.getSubCompound("display")?: return
+        val displayCompound = item.getSubCompound("display") ?: return
         val parser = JsonParser()
 
         for (i in 0 until nbtTagList.tagCount()) {

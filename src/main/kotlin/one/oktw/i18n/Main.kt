@@ -4,6 +4,7 @@ import eu.crushedpixel.sponge.packetgate.api.listener.PacketListener
 import eu.crushedpixel.sponge.packetgate.api.registry.PacketGate
 import net.minecraft.entity.player.EntityPlayerMP
 import net.minecraft.network.play.client.CPacketCreativeInventoryAction
+import net.minecraft.network.play.server.SPacketOpenWindow
 import net.minecraft.network.play.server.SPacketSetSlot
 import net.minecraft.network.play.server.SPacketWindowItems
 import net.minecraft.server.MinecraftServer
@@ -68,6 +69,7 @@ class Main {
                 packetConnection,
                 SPacketSetSlot::class.java,
                 SPacketWindowItems::class.java,
+                SPacketOpenWindow::class.java,
                 CPacketCreativeInventoryAction::class.java
         )
     }
