@@ -32,25 +32,6 @@ import java.util.*
  */
 @Suppress("unused", "MemberVisibilityCanBePrivate")
 class TranslationServiceImpl(private val scope: String) : TranslationService {
-    override fun fromItem(item: ItemStack): Text {
-        return item.get(Keys.DISPLAY_NAME).orElse(null)?.let {
-            val plain = it.toPlain()
-
-            if (plain.startsWith(IDENTIFIER)) {
-                val json = plain.drop(IDENTIFIER.length)
-
-                try {
-                    TextSerializers.JSON.deserialize(json)
-                } catch (err: Throwable) {
-                    it
-                }
-            } else {
-                it
-            }
-        } ?: let {
-            Text.of(item.translation)
-        }
-    }
 
     override fun ofLiteralPlaceHolder(vararg values: Any): Text {
         return ofPlaceHolder(*values)
@@ -110,5 +91,43 @@ class TranslationServiceImpl(private val scope: String) : TranslationService {
 
     override fun removeStyle(text: Text): Text {
         return Helper.removeStyle(text)
+    }
+
+    override fun fromItem(item: ItemStack): Text {
+        return item.get(Keys.DISPLAY_NAME).orElse(null)?.let {
+            val plain = it.toPlain()
+
+            if (plain.startsWith(IDENTIFIER)) {
+                val json = plain.drop(IDENTIFIER.length)
+
+                try {
+                    TextSerializers.JSON.deserialize(json)
+                } catch (err: Throwable) {
+                    it
+                }
+            } else {
+                it
+            }
+        } ?: let {
+            Text.of(item.translation)
+        }
+    }
+
+    override fun fromText(text: Text): Text {
+        val plain = text.toPlain()
+
+        return if (plain.startsWith(IDENTIFIER)) {
+            TextSerializers.JSON.deserialize(plain.drop(IDENTIFIER.length))
+        } else {
+            text
+        }
+    }
+
+    override fun fromString(str: String): Text {
+        return if (str.startsWith(IDENTIFIER)) {
+            TextSerializers.JSON.deserialize(str.drop(IDENTIFIER.length))
+        } else {
+            Text.of(str)
+        }
     }
 }

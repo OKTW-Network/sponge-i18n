@@ -12,15 +12,14 @@ public interface I18n {
     Registry getRegistry();
 
     @NotNull
-    TextSerializer getLegacySerializer(@NotNull Locale var1);
+    TextSerializer getLegacySerializer(@NotNull Locale locale);
 
     @NotNull
-    TextSerializer getSpongeSerializer(@NotNull Locale var1);
+    TextSerializer getSpongeSerializer(@NotNull Locale locale);
 
     @NotNull
-    TextSerializer getPlainTextSerializer(@NotNull Locale var1);
+    TextSerializer getPlainTextSerializer(@NotNull Locale locale);
 
     @NotNull
-    TranslationService register(@NotNull String var1, @NotNull TranslationStringProvider var2, boolean var3);
-
+    TranslationService register(@NotNull String scope, @NotNull TranslationStringProvider provider, boolean allowConflict);
 }

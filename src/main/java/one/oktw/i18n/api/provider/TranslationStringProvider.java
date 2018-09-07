@@ -7,5 +7,5 @@ import java.util.Locale;
 
 public interface TranslationStringProvider {
     @Nullable
-    String get(@NotNull Locale var1, @NotNull String var2);
+    String get(@NotNull Locale locale, @NotNull String key);
 }
