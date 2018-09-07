@@ -1,10 +1,9 @@
-package one.oktw.i18n.api
+package one.oktw.i18n.impl
 
-import one.oktw.i18n.Main
+import one.oktw.i18n.api.Registry
 import one.oktw.i18n.api.provider.TranslationStringProvider
 import org.spongepowered.api.entity.living.player.Player
 import java.util.*
-import java.util.Arrays.asList
 import java.util.concurrent.ConcurrentHashMap
 
 val DEFAULT_LANGUAGE = Locale.ENGLISH
@@ -12,9 +11,9 @@ val DEFAULT_LANGUAGE = Locale.ENGLISH
 /**
  * Registry of player language setting and translation providers
  */
-class Registry private constructor() {
+class RegistryImpl: Registry {
     companion object {
-        val instance = Registry()
+        val instance = RegistryImpl()
     }
 
     private val playerLanguage = ConcurrentHashMap<UUID, Locale>()
@@ -22,11 +21,11 @@ class Registry private constructor() {
     private val providers: ArrayList<TranslationStringProvider> = ArrayList()
 
     @Suppress("unused")
-    fun register(provider: TranslationStringProvider) {
+    override fun register(provider: TranslationStringProvider) {
         providers.add(provider)
     }
 
-    fun get(locale: Locale, key: String): String {
+    override fun get(locale: Locale, key: String): String {
         val language = locale.toLanguageTag()
 
         val cached = cache[Pair(language, key)]
@@ -62,11 +61,11 @@ class Registry private constructor() {
     }
 
     @Suppress("unused")
-    fun setLanguage(player: Player, locale: Locale) {
+    override fun setLanguage(player: Player, locale: Locale) {
         playerLanguage[player.uniqueId] = locale
     }
 
-    fun getLanguage(player: Player): Locale {
+    override fun getLanguage(player: Player): Locale {
         return playerLanguage[player.uniqueId] ?: DEFAULT_LANGUAGE
     }
 }

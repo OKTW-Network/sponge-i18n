@@ -8,8 +8,7 @@ import net.minecraft.network.play.server.SPacketSetSlot
 import net.minecraft.network.play.server.SPacketWindowItems
 import net.minecraft.server.MinecraftServer
 import one.oktw.i18n.api.I18n
-import one.oktw.i18n.api.I18nImpl
-import one.oktw.i18n.api.Registry
+import one.oktw.i18n.impl.I18nImpl
 import one.oktw.i18n.api.service.TranslationService
 import one.oktw.i18n.command.TestItem
 import one.oktw.i18n.network.UserListener
@@ -50,10 +49,11 @@ class Main {
         main = this
     }
 
+    @Suppress("UNUSED_PARAMETER")
     @Listener(order = Order.EARLY)
     fun onPreInit(event: GamePreInitializationEvent) {
         Sponge.getServiceManager().setProvider(plugin, I18n::class.java, I18nImpl)
-        languageService = Sponge.getServiceManager().provide(I18n::class.java).get().register("i18n", TestTranslationProvider.instance)
+        languageService = Sponge.getServiceManager().provide(I18n::class.java).get().register("i18n", TestTranslationProvider.instance, false)
         Sponge.getCommandManager().register(plugin, TestItem.spec, "i18n-test")
     }
 
@@ -63,7 +63,7 @@ class Main {
         val packetConnection = packetGate.connectionByPlayer(event.targetEntity).get()
 
         packetGate.registerListener(
-                UserListener(event.targetEntity, Registry.instance),
+                UserListener(event.targetEntity, I18nImpl.registry),
                 PacketListener.ListenerPriority.EARLY,
                 packetConnection,
                 SPacketSetSlot::class.java,
@@ -75,7 +75,7 @@ class Main {
     @Listener
     fun onPlayerLanguage(event: PlayerChangeClientSettingsEvent) {
         val player = event.targetEntity
-        Registry.instance.setLanguage(player, event.locale)
+        I18nImpl.registry.setLanguage(player, event.locale)
 
         (Sponge.getServer() as MinecraftServer).playerList.syncPlayerInventory(player as EntityPlayerMP)
     }

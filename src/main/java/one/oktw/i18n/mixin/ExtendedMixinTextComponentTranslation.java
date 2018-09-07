@@ -5,7 +5,7 @@ import com.google.common.collect.Lists;
 import net.minecraft.util.text.translation.I18n;
 import one.oktw.i18n.text.interfaces.IExtendedMixinTextComponent;
 import net.minecraft.util.text.*;
-import one.oktw.i18n.api.I18nImpl;
+import one.oktw.i18n.impl.I18nImpl;
 import one.oktw.i18n.text.util.vanilla.ExtendedMixinTextComponentBase$FUNCTION1;
 import one.oktw.i18n.text.util.vanilla.ExtendedMixinTextComponentBase$FUNCTION2;
 import one.oktw.i18n.text.util.vanilla.ExtendedTextComponentIterable;

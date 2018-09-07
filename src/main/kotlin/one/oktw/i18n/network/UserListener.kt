@@ -15,7 +15,7 @@ import net.minecraft.network.play.client.CPacketCreativeInventoryAction
 import net.minecraft.network.play.server.SPacketSetSlot
 import net.minecraft.network.play.server.SPacketWindowItems
 import one.oktw.i18n.Main
-import one.oktw.i18n.api.I18nImpl
+import one.oktw.i18n.impl.I18nImpl
 import org.spongepowered.api.entity.living.player.Player
 import org.spongepowered.api.text.serializer.TextSerializers
 
@@ -75,7 +75,7 @@ class UserListener(private val player: Player, private val registry: Registry) :
     }
 
     private fun rewriteItem(item: ItemStack): ItemStack {
-        val language = Registry.instance.getLanguage(player)
+        val language = registry.getLanguage(player)
 
         val translated = ArrayList<Pair<Int, String>>()
 

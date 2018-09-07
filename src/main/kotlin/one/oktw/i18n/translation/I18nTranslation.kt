@@ -1,6 +1,6 @@
 package one.oktw.i18n.translation
 
-import one.oktw.i18n.api.I18nImpl
+import one.oktw.i18n.impl.I18nImpl
 import org.spongepowered.api.text.translation.Translation
 import java.util.*
 

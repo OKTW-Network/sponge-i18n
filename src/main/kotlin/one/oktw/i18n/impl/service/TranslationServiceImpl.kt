@@ -1,7 +1,8 @@
-package one.oktw.i18n.api.service
+package one.oktw.i18n.impl.service
 
 import one.oktw.i18n.Main.Companion.IDENTIFIER
-import one.oktw.i18n.api.I18nImpl
+import one.oktw.i18n.api.service.TranslationService
+import one.oktw.i18n.impl.I18nImpl
 import one.oktw.i18n.text.Helper
 import one.oktw.i18n.translation.I18nTranslation
 import org.spongepowered.api.data.key.Keys

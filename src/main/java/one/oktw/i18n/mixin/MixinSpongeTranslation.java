@@ -1,6 +1,6 @@
 package one.oktw.i18n.mixin;
 
-import one.oktw.i18n.api.I18nImpl;
+import one.oktw.i18n.impl.I18nImpl;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;

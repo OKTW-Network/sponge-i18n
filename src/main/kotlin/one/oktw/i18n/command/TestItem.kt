@@ -2,7 +2,7 @@ package one.oktw.i18n.command
 
 import one.oktw.i18n.Main
 import one.oktw.i18n.text.interfaces.IExtendedMixinTextComponent
-import one.oktw.i18n.api.I18nImpl
+import one.oktw.i18n.impl.I18nImpl
 import org.spongepowered.api.command.CommandResult
 import org.spongepowered.api.command.CommandSource
 import org.spongepowered.api.command.args.CommandContext
@@ -13,11 +13,8 @@ import org.spongepowered.api.entity.living.player.Player
 import org.spongepowered.api.item.ItemTypes
 import org.spongepowered.api.item.inventory.ItemStack
 import org.spongepowered.api.text.Text
-import org.spongepowered.api.text.TranslatableText
 import org.spongepowered.api.text.format.TextColors
 import org.spongepowered.api.text.format.TextStyles
-import org.spongepowered.api.text.serializer.TextSerializers
-import org.spongepowered.api.text.translation.Translation
 import org.spongepowered.common.interfaces.text.IMixinText
 import java.util.*
 import java.util.Arrays.asList

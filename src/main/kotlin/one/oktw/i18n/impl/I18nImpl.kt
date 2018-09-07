@@ -1,10 +1,12 @@
-package one.oktw.i18n.api
+package one.oktw.i18n.impl
 
+import one.oktw.i18n.api.I18n
+import one.oktw.i18n.api.Registry
+import one.oktw.i18n.impl.provider.ScopedTranslationStringProvider
 import one.oktw.i18n.api.provider.TranslationStringProvider
-import one.oktw.i18n.api.provider.TranslationStringProvider.Companion.ScopedTranslationStringProvider
-import one.oktw.i18n.api.serializer.LocalizedFomattingCodeSerializer
-import one.oktw.i18n.api.serializer.LocalizedPlainTextSerializer
-import one.oktw.i18n.api.service.TranslationServiceImpl
+import one.oktw.i18n.impl.serializer.LocalizedFomattingCodeSerializer
+import one.oktw.i18n.impl.serializer.LocalizedPlainTextSerializer
+import one.oktw.i18n.impl.service.TranslationServiceImpl
 import org.spongepowered.api.text.serializer.TextSerializer
 import java.util.*
 
@@ -23,7 +25,9 @@ object I18nImpl : I18n {
         return LocalizedPlainTextSerializer(locale)
     }
 
-    override val registry = Registry.instance
+    override fun getRegistry(): Registry {
+        return RegistryImpl.instance
+    }
 
     override fun register(scope: String, provider: TranslationStringProvider, allowSameScopeExist: Boolean): TranslationServiceImpl {
         if (registered.contains(scope) && !allowSameScopeExist) {

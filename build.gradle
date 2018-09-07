@@ -116,7 +116,18 @@ task packageSources(type: Jar, dependsOn: 'classes') {
     classifier = 'sources'
 }
 
-artifacts { archives packageSources }
+task packageAPI(type: Jar, dependsOn: 'shadowJar') {
+    from(sourceSets.main.output) {
+        include "one/oktw/i18n/api/**"
+    }
+
+    classifier = 'api'
+}
+
+artifacts {
+    archives packageSources
+    archives packageAPI
+}
 
 jar.dependsOn(shadowJar)
 jar.enabled = false
