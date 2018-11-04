@@ -4,6 +4,7 @@ import eu.crushedpixel.sponge.packetgate.api.listener.PacketListener
 import eu.crushedpixel.sponge.packetgate.api.registry.PacketGate
 import net.minecraft.entity.player.EntityPlayerMP
 import net.minecraft.network.play.client.CPacketCreativeInventoryAction
+import net.minecraft.network.play.server.SPacketEntityMetadata
 import net.minecraft.network.play.server.SPacketOpenWindow
 import net.minecraft.network.play.server.SPacketSetSlot
 import net.minecraft.network.play.server.SPacketWindowItems
@@ -29,7 +30,7 @@ import javax.inject.Inject
 @Plugin(
         id = "i18n",
         name = "i18n",
-        version = "1.0-Snapshot",
+        version = "0.1.4",
         dependencies = [Dependency(id = "packetgate", version = "0.1.2")]
 )
 class Main {
@@ -70,6 +71,7 @@ class Main {
                 SPacketSetSlot::class.java,
                 SPacketWindowItems::class.java,
                 SPacketOpenWindow::class.java,
+                SPacketEntityMetadata::class.java,
                 CPacketCreativeInventoryAction::class.java
         )
     }

@@ -11,7 +11,9 @@ import eu.crushedpixel.sponge.packetgate.api.registry.PacketConnection
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagList
 import net.minecraft.nbt.NBTTagString
+import net.minecraft.network.datasync.DataSerializers
 import net.minecraft.network.play.client.CPacketCreativeInventoryAction
+import net.minecraft.network.play.server.SPacketEntityMetadata
 import net.minecraft.network.play.server.SPacketOpenWindow
 import net.minecraft.network.play.server.SPacketSetSlot
 import net.minecraft.network.play.server.SPacketWindowItems
@@ -30,6 +32,7 @@ class UserListener(private val player: Player, private val registry: Registry) :
         packetEvent.packet.let { it as? SPacketSetSlot }?.let { handle(it, packetEvent, connection) }
         packetEvent.packet.let { it as? SPacketWindowItems }?.let { handle(it, packetEvent, connection) }
         packetEvent.packet.let { it as? SPacketOpenWindow }?.let { handle(it, packetEvent, connection) }
+        packetEvent.packet.let { it as? SPacketEntityMetadata }?.let { handle(it, packetEvent, connection) }
     }
 
     override fun onPacketRead(packetEvent: PacketEvent, connection: PacketConnection) {
@@ -94,6 +97,16 @@ class UserListener(private val player: Player, private val registry: Registry) :
             } catch (err: Throwable) {
                 Main.main.logger.error(err.localizedMessage)
                 Main.main.logger.error(err.stackTrace.joinToString(""))
+            }
+        }
+    }
+
+    @Suppress("UNUSED_PARAMETER")
+    private fun handle(packet: SPacketEntityMetadata, packetEvent: PacketEvent, connection: PacketConnection) {
+        for (dataManagerEntry in packet.dataManagerEntries) {
+            if (dataManagerEntry.key.serializer == DataSerializers.ITEM_STACK) {
+                val itemStack = dataManagerEntry.value as? ItemStack?: continue
+                dataManagerEntry.value = rewriteItem(itemStack)
             }
         }
     }
