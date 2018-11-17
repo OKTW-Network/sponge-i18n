@@ -1,8 +1,6 @@
 package one.oktw.i18n.network
 
 import com.google.gson.JsonObject
-import one.oktw.i18n.Main.Companion.IDENTIFIER
-import one.oktw.i18n.api.Registry
 import com.google.gson.JsonParser
 import com.google.gson.JsonPrimitive
 import eu.crushedpixel.sponge.packetgate.api.event.PacketEvent
@@ -19,12 +17,11 @@ import net.minecraft.network.play.server.SPacketSetSlot
 import net.minecraft.network.play.server.SPacketWindowItems
 import net.minecraft.util.text.TextComponentString
 import one.oktw.i18n.Main
+import one.oktw.i18n.Main.Companion.IDENTIFIER
+import one.oktw.i18n.api.Registry
 import one.oktw.i18n.impl.I18nImpl
-import one.oktw.i18n.text.interfaces.IExtendedMixinTextComponent
 import org.spongepowered.api.entity.living.player.Player
 import org.spongepowered.api.text.serializer.TextSerializers
-import scala.reflect.internal.Trees
-import java.awt.TextComponent
 
 @Suppress("unused")
 class UserListener(private val player: Player, private val registry: Registry) : PacketListenerAdapter() {
@@ -103,11 +100,24 @@ class UserListener(private val player: Player, private val registry: Registry) :
 
     @Suppress("UNUSED_PARAMETER")
     private fun handle(packet: SPacketEntityMetadata, packetEvent: PacketEvent, connection: PacketConnection) {
-        for (dataManagerEntry in packet.dataManagerEntries) {
-            if (dataManagerEntry.key.serializer == DataSerializers.ITEM_STACK) {
-                val itemStack = dataManagerEntry.value as? ItemStack?: continue
-                dataManagerEntry.value = rewriteItem(itemStack)
+        var tained = false
+        val cloned = SPacketEntityMetadata()
+        cloned.entityId = packet.entityId
+        cloned.dataManagerEntries = packet.dataManagerEntries.map {entry->
+            if (entry.key.serializer == DataSerializers.ITEM_STACK) {
+                val itemStack = entry.value as? ItemStack?: return@map entry
+
+                val clonedEntry = entry.copy()
+                tained = true
+                clonedEntry.value = rewriteItem(itemStack)
+                clonedEntry
+            } else {
+                entry
             }
+        }
+
+        if (tained) {
+            packetEvent.packet = cloned
         }
     }
 
