@@ -2,10 +2,13 @@ package one.oktw.i18n.text
 
 import com.google.gson.JsonObject
 import com.google.gson.JsonPrimitive
+import net.minecraft.inventory.ItemStackHelper
+import net.minecraft.item.ItemShulkerBox
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.JsonToNBT
 import net.minecraft.nbt.NBTTagList
 import net.minecraft.nbt.NBTTagString
+import net.minecraft.util.NonNullList
 import net.minecraft.util.text.*
 import net.minecraft.util.text.event.HoverEvent
 import one.oktw.i18n.Main
@@ -115,6 +118,21 @@ class Helper {
                                 Main.main.logger.error(err.stackTrace.joinToString(""))
                             }
                         }
+                    }
+                }
+            }
+
+            if (newItem.item is ItemShulkerBox) {
+                newItem.getSubCompound("BlockEntityTag")?.let { blockEntityTag ->
+                    if (blockEntityTag.hasKey("Items", 9)) {
+                        val itemList = NonNullList.withSize(27, ItemStack.EMPTY)
+                        ItemStackHelper.loadAllItems(blockEntityTag, itemList)
+
+                        (0 until 27).map {
+                            itemList[it] = rewriteItem(itemList[it], language)
+                        }
+
+                        ItemStackHelper.saveAllItems(blockEntityTag, itemList)
                     }
                 }
             }
