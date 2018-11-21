@@ -5,6 +5,7 @@ import eu.crushedpixel.sponge.packetgate.api.event.PacketEvent
 import eu.crushedpixel.sponge.packetgate.api.listener.PacketListenerAdapter
 import eu.crushedpixel.sponge.packetgate.api.registry.PacketConnection
 import net.minecraft.item.ItemStack
+import net.minecraft.nbt.JsonToNBT
 import net.minecraft.nbt.NBTTagString
 import net.minecraft.network.datasync.DataSerializers
 import net.minecraft.network.play.client.CPacketCreativeInventoryAction
@@ -70,7 +71,7 @@ class UserListener(private val player: Player, private val registry: Registry) :
         item.removeSubCompound("i18n")
 
         val nbtTagList = translationNBT.getTagList("list", 8)
-        val displayCompound = item.getSubCompound("display") ?: return
+        val displayCompound = item.getSubCompound("display")
         val parser = JsonParser()
 
         for (i in 0 until nbtTagList.tagCount()) {
@@ -81,10 +82,20 @@ class UserListener(private val player: Player, private val registry: Registry) :
 
                 when (index) {
                     -1 -> {
-                        displayCompound.setString("Name", IDENTIFIER + json)
+                        displayCompound?.setString("Name", IDENTIFIER + json)
+                    }
+                    -2 -> {
+                        try {
+                            JsonToNBT.getTagFromJson(json).let {
+                                item.setTagInfo("BlockEntityTag", it)
+                            }
+                        } catch (err: Throwable) {
+                            Main.main.logger.error(err.localizedMessage)
+                            Main.main.logger.error(err.stackTrace.joinToString(""))
+                        }
                     }
                     else -> {
-                        displayCompound.getTagList("Lore", 8).set(index, NBTTagString(IDENTIFIER + json))
+                        displayCompound?.getTagList("Lore", 8)?.set(index, NBTTagString(IDENTIFIER + json))
                     }
                 }
             } catch (err: Throwable) {

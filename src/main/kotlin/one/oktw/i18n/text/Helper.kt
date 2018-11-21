@@ -122,8 +122,11 @@ class Helper {
                 }
             }
 
+            var shulkerTranslated = false
             if (newItem.item is ItemShulkerBox) {
                 newItem.getSubCompound("BlockEntityTag")?.let { blockEntityTag ->
+
+                    shulkerTranslated = true
                     if (blockEntityTag.hasKey("Items", 9)) {
                         val itemList = NonNullList.withSize(27, ItemStack.EMPTY)
                         ItemStackHelper.loadAllItems(blockEntityTag, itemList)
@@ -135,6 +138,10 @@ class Helper {
                         ItemStackHelper.saveAllItems(blockEntityTag, itemList)
                     }
                 }
+            }
+
+            if (shulkerTranslated) {
+                translated.add(Pair(-2, item.getSubCompound("BlockEntityTag").toString()))
             }
 
             if (translated.size > 0) {
