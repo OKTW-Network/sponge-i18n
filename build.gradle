@@ -33,7 +33,7 @@ apply plugin: 'org.spongepowered.mixin'
 apply plugin: 'kotlin'
 
 group 'one.oktw'
-version '0.1.5'
+version '0.1.5.1'
 
 sourceCompatibility = 1.8
 
