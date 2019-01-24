@@ -93,8 +93,10 @@ class Helper {
                             nbt.setString("Name", result)
                             translated.add(Pair(-1, json))
                         } catch (err: Throwable) {
+                            Main.main.logger.error(err.message)
                             Main.main.logger.error(err.localizedMessage)
-                            Main.main.logger.error(err.stackTrace.joinToString(""))
+                            Main.main.logger.error(err.stackTrace.joinToString("\n"))
+                            err.printStackTrace()
                         }
                     }
                 }
@@ -114,8 +116,10 @@ class Helper {
 
                                 translated.add(Pair(i, json))
                             } catch (err: Throwable) {
+                                Main.main.logger.error(err.message)
                                 Main.main.logger.error(err.localizedMessage)
-                                Main.main.logger.error(err.stackTrace.joinToString(""))
+                                Main.main.logger.error(err.stackTrace.joinToString("\n"))
+                                err.printStackTrace()
                             }
                         }
                     }

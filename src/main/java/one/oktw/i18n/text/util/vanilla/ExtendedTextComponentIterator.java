@@ -50,10 +50,10 @@ public class ExtendedTextComponentIterator extends UnmodifiableIterator<IExtende
 
     public ExtendedTextComponentIterator(Locale locale, Iterator<IExtendedMixinTextComponent> children) {
         this.children = checkNotNull(children, "children");
+        this.locale = locale;
         if (this.children.hasNext()) {
             this.setCurrentChildIterator();
         }
-        this.locale = locale;
     }
 
     @Override

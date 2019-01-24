@@ -47,8 +47,10 @@ class UserListener(private val player: Player, private val registry: Registry) :
 
                 packet.windowTitle = TextComponentString(translated)
             } catch (err: Throwable) {
+                Main.main.logger.error(err.message)
                 Main.main.logger.error(err.localizedMessage)
-                Main.main.logger.error(err.stackTrace.joinToString(""))
+                Main.main.logger.error(err.stackTrace.joinToString("\n"))
+                err.printStackTrace()
             }
         }
     }
@@ -90,8 +92,10 @@ class UserListener(private val player: Player, private val registry: Registry) :
                                 item.setTagInfo("BlockEntityTag", it)
                             }
                         } catch (err: Throwable) {
+                            Main.main.logger.error(err.message)
                             Main.main.logger.error(err.localizedMessage)
-                            Main.main.logger.error(err.stackTrace.joinToString(""))
+                            Main.main.logger.error(err.stackTrace.joinToString("\n"))
+                            err.printStackTrace()
                         }
                     }
                     else -> {
@@ -99,8 +103,10 @@ class UserListener(private val player: Player, private val registry: Registry) :
                     }
                 }
             } catch (err: Throwable) {
+                Main.main.logger.error(err.message)
                 Main.main.logger.error(err.localizedMessage)
-                Main.main.logger.error(err.stackTrace.joinToString(""))
+                Main.main.logger.error(err.stackTrace.joinToString("\n"))
+                err.printStackTrace()
             }
         }
     }
