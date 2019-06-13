@@ -33,7 +33,7 @@ import javax.inject.Inject
 @Plugin(
         id = "i18n",
         name = "i18n",
-        version = "0.1.5.1",
+        version = "0.1.5.2",
         dependencies = [Dependency(id = "packetgate", version = "0.1.2")]
 )
 class Main {
