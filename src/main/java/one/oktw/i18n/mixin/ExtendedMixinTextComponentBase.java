@@ -1,11 +1,11 @@
 package one.oktw.i18n.mixin;
 
 import com.google.common.collect.Iterators;
-import one.oktw.i18n.text.interfaces.IExtendedMixinTextComponent;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TextComponentBase;
 import net.minecraft.util.text.TextFormatting;
+import one.oktw.i18n.text.interfaces.IExtendedMixinTextComponent;
 import one.oktw.i18n.text.util.sponge.ExtendedMixinTextIterable;
 import one.oktw.i18n.text.util.vanilla.ExtendedMixinTextComponentBase$FUNCTION1;
 import one.oktw.i18n.text.util.vanilla.ExtendedMixinTextComponentBase$FUNCTION2;
@@ -13,11 +13,12 @@ import one.oktw.i18n.text.util.vanilla.ExtendedTextComponentIterable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.common.text.ResolvedChatStyle;
+
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+
 import static net.minecraft.util.text.TextFormatting.*;
-import static net.minecraft.util.text.TextFormatting.OBFUSCATED;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.spongepowered.common.text.SpongeTexts.COLOR_CHAR;
 
@@ -36,7 +37,7 @@ public abstract class ExtendedMixinTextComponentBase implements IExtendedMixinTe
 
     @Override
     public Iterator<IExtendedMixinTextComponent> iterator(Locale locale) {
-        return Iterators.<IExtendedMixinTextComponent>concat(Iterators.forArray(this), createDeepCopyIterator(locale, (List<IExtendedMixinTextComponent>) (Object) this.siblings));
+        return Iterators.<IExtendedMixinTextComponent>concat(Iterators.forArray(this), i18nCreateDeepCopyIterator(locale, (List<IExtendedMixinTextComponent>) (Object) this.siblings));
     }
 
     public String getUnformattedComponentText(Locale locale) {
@@ -70,15 +71,15 @@ public abstract class ExtendedMixinTextComponentBase implements IExtendedMixinTe
         return stringbuilder.toString();
     }
 
-    private static ResolvedChatStyle resolve(ResolvedChatStyle current, Style previous, Style style) {
+    private static ResolvedChatStyle i18nResolve(ResolvedChatStyle current, Style previous, Style style) {
         if (current != null && style.parentStyle == previous) {
             return new ResolvedChatStyle(
                     defaultIfNull(style.color, current.color),
-                    firstNonNull(style.bold, current.bold),
-                    firstNonNull(style.italic, current.italic),
-                    firstNonNull(style.underlined, current.underlined),
-                    firstNonNull(style.strikethrough, current.strikethrough),
-                    firstNonNull(style.obfuscated, current.obfuscated)
+                    i18nFirstNonNull(style.bold, current.bold),
+                    i18nFirstNonNull(style.italic, current.italic),
+                    i18nFirstNonNull(style.underlined, current.underlined),
+                    i18nFirstNonNull(style.strikethrough, current.strikethrough),
+                    i18nFirstNonNull(style.obfuscated, current.obfuscated)
             );
         }
         return new ResolvedChatStyle(
@@ -91,21 +92,21 @@ public abstract class ExtendedMixinTextComponentBase implements IExtendedMixinTe
         );
     }
 
-    private static boolean firstNonNull(Boolean b1, boolean b2) {
+    private static boolean i18nFirstNonNull(Boolean b1, boolean b2) {
         return b1 != null ? b1 : b2;
     }
 
-    private static void apply(StringBuilder builder, char code, TextFormatting formatting) {
+    private static void i18nApply(StringBuilder builder, char code, TextFormatting formatting) {
         builder.append(code).append(formatting.formattingCode);
     }
 
-    private static void apply(StringBuilder builder, char code, TextFormatting formatting, boolean state) {
+    private static void i18nApply(StringBuilder builder, char code, TextFormatting formatting, boolean state) {
         if (state) {
-            apply(builder, code, formatting);
+            i18nApply(builder, code, formatting);
         }
     }
 
-    private static Iterator<IExtendedMixinTextComponent> createDeepCopyIterator(Locale locale, Iterable<IExtendedMixinTextComponent> components) {
+    private static Iterator<IExtendedMixinTextComponent> i18nCreateDeepCopyIterator(Locale locale, Iterable<IExtendedMixinTextComponent> components) {
         Iterator<IExtendedMixinTextComponent> iterator = Iterators.concat(Iterators.transform(components.iterator(), new ExtendedMixinTextComponentBase$FUNCTION1(locale)));
         iterator = Iterators.transform(iterator, new ExtendedMixinTextComponentBase$FUNCTION2(locale));
         return iterator;
@@ -117,12 +118,12 @@ public abstract class ExtendedMixinTextComponentBase implements IExtendedMixinTe
         StringBuilder builder = new StringBuilder();
 
         Style style = getStyle();
-        apply(builder, COLOR_CHAR, defaultIfNull(style.getColor(), RESET));
-        apply(builder, COLOR_CHAR, BOLD, style.getBold());
-        apply(builder, COLOR_CHAR, ITALIC, style.getItalic());
-        apply(builder, COLOR_CHAR, UNDERLINE, style.getUnderlined());
-        apply(builder, COLOR_CHAR, STRIKETHROUGH, style.getStrikethrough());
-        apply(builder, COLOR_CHAR, OBFUSCATED, style.getObfuscated());
+        i18nApply(builder, COLOR_CHAR, defaultIfNull(style.getColor(), RESET));
+        i18nApply(builder, COLOR_CHAR, BOLD, style.getBold());
+        i18nApply(builder, COLOR_CHAR, ITALIC, style.getItalic());
+        i18nApply(builder, COLOR_CHAR, UNDERLINE, style.getUnderlined());
+        i18nApply(builder, COLOR_CHAR, STRIKETHROUGH, style.getStrikethrough());
+        i18nApply(builder, COLOR_CHAR, OBFUSCATED, style.getObfuscated());
 
         return builder;
     }
@@ -149,7 +150,7 @@ public abstract class ExtendedMixinTextComponentBase implements IExtendedMixinTe
 
         for (IExtendedMixinTextComponent component : withChildren(locale)) {
             Style newStyle = component.getStyle();
-            ResolvedChatStyle style = resolve(current, previous, newStyle);
+            ResolvedChatStyle style = i18nResolve(current, previous, newStyle);
             previous = newStyle;
 
             if (current == null
@@ -161,22 +162,22 @@ public abstract class ExtendedMixinTextComponentBase implements IExtendedMixinTe
                     || (current.obfuscated && !style.obfuscated)) {
 
                 if (style.color != null) {
-                    apply(builder, code, style.color);
+                    i18nApply(builder, code, style.color);
                 } else if (current != null) {
-                    apply(builder, code, RESET);
+                    i18nApply(builder, code, RESET);
                 }
 
-                apply(builder, code, BOLD, style.bold);
-                apply(builder, code, ITALIC, style.italic);
-                apply(builder, code, UNDERLINE, style.underlined);
-                apply(builder, code, STRIKETHROUGH, style.strikethrough);
-                apply(builder, code, OBFUSCATED, style.obfuscated);
+                i18nApply(builder, code, BOLD, style.bold);
+                i18nApply(builder, code, ITALIC, style.italic);
+                i18nApply(builder, code, UNDERLINE, style.underlined);
+                i18nApply(builder, code, STRIKETHROUGH, style.strikethrough);
+                i18nApply(builder, code, OBFUSCATED, style.obfuscated);
             } else {
-                apply(builder, code, BOLD, current.bold != style.bold);
-                apply(builder, code, ITALIC, current.italic != style.italic);
-                apply(builder, code, UNDERLINE, current.underlined != style.underlined);
-                apply(builder, code, STRIKETHROUGH, current.strikethrough != style.strikethrough);
-                apply(builder, code, OBFUSCATED, current.obfuscated != style.obfuscated);
+                i18nApply(builder, code, BOLD, current.bold != style.bold);
+                i18nApply(builder, code, ITALIC, current.italic != style.italic);
+                i18nApply(builder, code, UNDERLINE, current.underlined != style.underlined);
+                i18nApply(builder, code, STRIKETHROUGH, current.strikethrough != style.strikethrough);
+                i18nApply(builder, code, OBFUSCATED, current.obfuscated != style.obfuscated);
             }
 
             current = style;
